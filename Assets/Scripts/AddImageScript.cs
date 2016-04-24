@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Linq;
 
 public class AddImageScript : MonoBehaviour {
 
@@ -28,8 +29,14 @@ public class AddImageScript : MonoBehaviour {
 	public GameObject butWord5;
 	public GameObject butWord6;
 	public GameObject butWord7;
+	public GameObject words, pics;
+	private Dictionary<string, GameObject> buttonPics = new Dictionary<string, GameObject>();
+	private Dictionary<string, GameObject> buttonWords = new Dictionary<string, GameObject>();
 
-	private GameObject[] goArray;
+	private List<GameObject> wordList = new List<GameObject>();
+	private List<GameObject> picList = new List<GameObject>();
+
+	public GameObject[] goArray;
 	private int[] numsShuffle;
 
 	private Text loadingText;
@@ -38,15 +45,24 @@ public class AddImageScript : MonoBehaviour {
 	private Dictionary<string, GameObject> themes = new Dictionary<string, GameObject>();
 	
 	private List<Sticker1> downloadedStickers = new List<Sticker1>();
-
 	private float loadingTimer = 3f;
-	
 	private bool initialized = false;
 
 	// Use this for initialization
 	void Start () {
 		// loading panel to indicate game is loading (downloading images from database).
 		loadingText = loadingPanel.transform.GetChild(0).GetComponent<Text>();
+
+		foreach (Transform child in words.transform) {
+			wordList.Add(child.gameObject);
+			buttonWords.Add(child.name, child.gameObject);
+		}
+		foreach (Transform child in pics.transform) {
+			picList.Add(child.gameObject);
+			buttonPics.Add(child.name, child.gameObject);
+			//child.name.Substring(child.name.Length - 1);
+		}
+		Debug.Log(pics.transform.childCount);
 	}
 	
 	void Update() {
@@ -65,6 +81,7 @@ public class AddImageScript : MonoBehaviour {
 			
 			// Add new Themes from downloaded content
 			addDownloadedStickers();
+			initialized = true;
 		}
 	}
 	
@@ -133,13 +150,27 @@ public class AddImageScript : MonoBehaviour {
 					}
 					// shuffle List of numbers.
 					reshuffle(numsShuffle);
-					
-					for(int i=0; i < numsShuffle.Length; i++){
-						//numsShuffle[i] = i;
-						Debug.Log("Shuffled numbers array = " + numsShuffle);
+
+					// Randomize values of pictures and corresponding words
+					int j = 0;
+					foreach (GameObject imageButton in buttonPics.Values) {
+						Debug.Log("IMAGEBUTTON: " + imageButton.name);
+						Debug.Log(j);
+						imageButton.GetComponent<Image>().sprite = goArray[numsShuffle[j]].GetComponent<Image>().sprite;
+						string index = imageButton.name.Substring(imageButton.name.Length - 1);
+						GameObject temp = buttonWords["Word" + index];
+						wordList.Remove(temp);
+						Debug.Log("Removed Word" + index);
+
+						int randomIndex = Random.Range(0, wordList.Count);
+
+						wordList[randomIndex].transform.GetChild(0).GetComponent<Text>().text = goArray[numsShuffle[j]].GetComponent<Image>().name;
+						wordList.Remove(wordList[randomIndex]);
+						wordList.Add(temp);
+						j++;
 					}
-					
-					
+					Debug.Log(wordList.Count);
+					/*
 					butPic1.GetComponent<Image>().sprite = goArray[numsShuffle[0]].GetComponent<Image>().sprite;
 					// set the name of the button Word1 = to the name of the image added to the button of picture 1. 
 					butWord1.GetComponent<Image>().name = goArray[numsShuffle[0]].GetComponent<Image>().name;
@@ -168,7 +199,7 @@ public class AddImageScript : MonoBehaviour {
 
 					butPic7.GetComponent<Image>().sprite = goArray[numsShuffle[6]].GetComponent<Image>().sprite;
 					butWord7.GetComponent<Image>().name = goArray[numsShuffle[6]].GetComponent<Image>().name;
-					butWord7.transform.GetChild(0).GetComponent<Text>().text = butWord7.gameObject.name.ToString();
+					butWord7.transform.GetChild(0).GetComponent<Text>().text = butWord7.gameObject.name.ToString();*/
 				}
 			}
 			initialized = true;

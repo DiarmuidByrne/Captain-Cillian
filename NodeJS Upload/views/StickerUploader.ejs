@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Captain Cillian Uploader</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <!-- <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script> -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+    $(document).ready(function(){
+
+      var selectedTheme = "Standard";
+      var newTheme = false;
+      $(".addTheme").hide();
+      var themeSet = <%- JSON.stringify(Array.from(themes)) %>
+      var select = $("#ddlTheme");
+
+      themeSet.forEach(function (theme) {
+          select.append($('<option>').text(theme).attr('value', theme));
+      });
+      select.append($('<option>').text("<New Theme>").attr('value', "newTheme"));
+
+
+      $("#ddlTheme").change(function() {
+        if($("#ddlTheme").val() === "newTheme") {
+          $(".addTheme").show();
+          newTheme = true;
+        } else {
+          selectedTheme = $("#ddlTheme").val();
+          $(".addTheme").hide();
+          newTheme = false;
+        }
+      });
+
+      $('#frmUpload').submit(function(){
+        if (newTheme) {
+          selectedTheme = $("#newTheme").val();
+          alert(selectedTheme);
+        }
+        var form = $("#frmUpload");
+        var formData = new FormData($('#frmUpload')[0]);
+        var otherData = form.serialize();
+
+        var request = $.ajax({
+         url   : form.attr('action')+'/'+selectedTheme,
+         type  : form.attr('method'),
+         // Form data
+         data : formData,
+         //Options to tell jQuery not to process data or worry about content-type.
+         cache: false,
+         contentType: false,
+         processData: false
+        });
+        request.done( function (data, status) {
+           alert("Done");
+        });
+       request.fail( function (data, status) {
+          alert("Failed");
+        });
+       return false;
+      });
+    });
+
+    </script>
+
+    <div align="center"><h1>Captain Cillian Sticker Uploader.</h1>
+
+    <div class="AddSticker">
+
+      <h3 class="heading">Add Stickers</h3>
+
+<!--  -->
+      <form name='upload' action="http://localhost:8000/upload" method="POST" id="frmUpload" enctype='multipart/form-data'>
+        <div class="container">
+          <p><div class="row">
+          </br>Select a sticker image:   <input type="file" id="browseImage" name="sticker">
+          </div>
+
+          <div class="row">
+          </br><div class="selectTheme">Select theme:  <select id="ddlTheme" name="themeSelector" onmousedown="this.value='';" onchange="changedTheme(this.value);"></select></div>
+          </div>
+
+          <div class="row">
+          <div class="addTheme"></br>New Theme name:  <Input id="newTheme" name="themeName" type="text"></select></div>
+          </div>
+
+          <Button id="uploadButton">Upload</button>
+          <hr>
+      </form>
+
+      <div id="dialog" title="Structure">
+        <div id="dialog-text"></div>
+      </div>
+    </div>
+
+  </body>
+</html>
