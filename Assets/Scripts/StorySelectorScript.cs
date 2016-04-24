@@ -14,6 +14,7 @@ public class StorySelectorScript : MonoBehaviour {
 	public GameObject storySelector, storyViewer;
 	public GameObject storyImage, emailPanel;
 	public GameObject confirmationPanel;
+	public GameObject sendingEmailPanel;
 	public Button sendEmailButton;
 
 	public InputField messageInput, recipientAddress;
@@ -93,6 +94,8 @@ public class StorySelectorScript : MonoBehaviour {
 			// Send email
 			sendEmail();
 			// Show email sent message
+			togglePanels(sendingEmailPanel, false);
+
 			showConfirmationPanel();
 		}
 		else {
@@ -101,6 +104,8 @@ public class StorySelectorScript : MonoBehaviour {
 	}
 
 	private void sendEmail() {
+		togglePanels(sendingEmailPanel, true);
+
 		string email = PlayerPrefs.GetString("userEmail");
 		string password = PlayerPrefs.GetString("userPassword");
 		string recipientEmail = recipientAddress.text;
@@ -175,6 +180,8 @@ public class StorySelectorScript : MonoBehaviour {
 
 	public void returnToStorySelection() {
 		currentStory.Clear();
+		currentStoryImagePaths.Clear();
+		togglePanels(emailPanel, false);
 		togglePanels(storyViewer, false);
 		togglePanels(storySelector, true);
 	}

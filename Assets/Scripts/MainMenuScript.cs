@@ -33,6 +33,13 @@ public class MainMenuScript : MonoBehaviour {
 		cg.blocksRaycasts = true;
 	}
 
+	public void toggled() {
+		if(checkForContent.isOn) PlayerPrefs.SetInt("checkForContent", 1);
+		else PlayerPrefs.SetInt("checkForContent", 0);
+		Debug.Log("CheckForContent " + PlayerPrefs.GetInt("checkForContent"));
+
+	}
+
 	public void hideOptions() {
 		saveSettings();
 		CanvasGroup cg = optionsPanel.GetComponent<CanvasGroup>();

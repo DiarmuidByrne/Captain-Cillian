@@ -39,7 +39,7 @@ public class CreateScript : MonoBehaviour {
 	public GameObject themeScroller;
 	public GameObject stickerPool;
 	public InputField storyTextInput;
-
+	public GameObject instructionsPanel;
 	private Text loadingText;
 	private Animator anim;
 	private Animator animStickers;
@@ -67,6 +67,13 @@ public class CreateScript : MonoBehaviour {
 	private string storyName = "";
 
 	void Start() {
+		if(!PlayerPrefs.HasKey("firstTime")) {
+			PlayerPrefs.SetInt("firstTime", 1);
+			togglePanels(instructionsPanel, true);
+		} else if(PlayerPrefs.GetInt("firstTime") == 0) {
+			togglePanels(instructionsPanel, false);
+		}
+
 		// Display loading screen
 		loadingPanel.GetComponent<CanvasGroup>().alpha = 1;
 		loadingPanel.GetComponent<CanvasGroup>().blocksRaycasts = true;
@@ -84,6 +91,11 @@ public class CreateScript : MonoBehaviour {
 
 		animStickers = stickerSidebar.GetComponent<Animator>();
 		animStickers.enabled = false;
+	}
+
+	public void hideInstructionsPanel() {
+		togglePanels(instructionsPanel, false);
+		PlayerPrefs.SetInt("firstTime", 0);
 	}
 
 	void Update() {

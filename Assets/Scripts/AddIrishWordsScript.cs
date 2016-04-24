@@ -5,79 +5,55 @@ using UnityEngine.UI;
 using System.Text.RegularExpressions;
 using System.IO;
 
-public class AddImageScript : MonoBehaviour {
-
+public class AddIrishWordsScript : MonoBehaviour {
+	
 	
 	public Camera mainCamera;
 	public Canvas sceneCanvas;
-	
-	public GameObject loadingPanel;
 
-	public GameObject butPic1;
-	public GameObject butPic2;
-	public GameObject butPic3;
-	public GameObject butPic4;
-	public GameObject butPic5;
-	public GameObject butPic6;
-	public GameObject butPic7;
 
-	public GameObject butWord1;
-	public GameObject butWord2;
-	public GameObject butWord3;
-	public GameObject butWord4;
-	public GameObject butWord5;
-	public GameObject butWord6;
-	public GameObject butWord7;
 
-	private GameObject[] goArray;
-	private int[] numsShuffle;
-
-	private Text loadingText;
 	private Animator anim;
 	private Dictionary<string, GameObject> themes = new Dictionary<string, GameObject>();
-	private List<Sticker1> downloadedStickers = new List<Sticker1>();
+	private List<Sound> downloadedStickers = new List<Sound>();
 	private float loadingTimer = 3f;
 	private bool initialized = false;
-
+	
 	private LearnGameScript learnGS;
-
+	
 	// Use this for initialization
 	void Start () {
-		// loading panel to indicate game is loading (downloading images from database).
-		loadingText = loadingPanel.transform.GetChild(0).GetComponent<Text>();
 
-		GameObject learnGSObject = GameObject.FindWithTag ("Canvas");
-		if (learnGSObject != null)
-		{
-			learnGS = learnGSObject.GetComponent <LearnGameScript>();
-		}
-		if (learnGS == null)
-		{
-			Debug.Log ("Cannot find 'LearnGameScript'");
-		}
-
+		
 	}
 	
 	void Update() {
-		if (!mainCamera.GetComponent<AWSManager2>().isFinishedDownload()) {
-			loadingTimer-=Time.deltaTime;
-			if(loadingTimer <= 0) loadingTimer = 3f;
-			else if (loadingTimer <= 3f && loadingTimer >= 2f) loadingText.text = "Downloading Content.";
-			else if (loadingTimer <= 2f && loadingTimer >= 1f) loadingText.text = "Downloading Content..";
-			else if (loadingTimer <= 1f && loadingTimer >= 0f) loadingText.text = "Downloading Content...";
+
+		if (!mainCamera.GetComponent<AWSManager3> ().isFinishedDownload ()) {
+			/*loadingTimer -= Time.deltaTime;
+			if (loadingTimer <= 0)
+				loadingTimer = 3f;
+			else if (loadingTimer <= 3f && loadingTimer >= 2f)
+				//loadingText.text = "Downloading Content.";
+			else if (loadingTimer <= 2f && loadingTimer >= 1f)
+				//loadingText.text = "Downloading Content..";
+			else if (loadingTimer <= 1f && loadingTimer >= 0f)
+				//loadingText.text = "Downloading Content...";*/
 			
 		} else if (!initialized) {
-			
-			loadingPanel.GetComponent<CanvasGroup>().alpha = 0;
-			loadingPanel.GetComponent<CanvasGroup>().blocksRaycasts = false;
-			downloadedStickers = mainCamera.GetComponent<AWSManager2>().getDownloadedStickers();
-			
+
+			//loadingPanel.GetComponent<CanvasGroup> ().alpha = 0;
+			//loadingPanel.GetComponent<CanvasGroup> ().blocksRaycasts = false;
+			downloadedStickers = mainCamera.GetComponent<AWSManager3> ().getDownloadedStickers ();
+
 			// Add new Themes from downloaded content
-			addDownloadedStickers();
+			addDownloadedStickers ();
 		}
+
 	}
 	
 	private void addDownloadedStickers() {
+
 		// Return and begin game if no new stickers exist
 		if(downloadedStickers.Count == 0) {
 			initialized = true;
@@ -90,14 +66,14 @@ public class AddImageScript : MonoBehaviour {
 			GameObject newThemeScroller = new GameObject();
 			GameObject newThemeIcon = new GameObject();
 			// Add each sticker to the scene under their respective theme
-			foreach (Sticker1 s in downloadedStickers) {
+			foreach (Sound s in downloadedStickers) {
 				if(s.stickerGO != null) {
 					string captured = Path.GetFileNameWithoutExtension(s.stickerName);
 					//s.stickerGO.GetComponent<Button>().onClick.AddListener(() => addSticker(captured));
 					
 					// replace '_' character with ' ' character for all image-names from database.
 					s.stickerGO.GetComponent<Image>().name = s.stickerGO.GetComponent<Image>().name.Replace('_', ' ');
-
+					
 					// Theme already exists, add to list
 					if(themes.ContainsKey(s.themeName)) {
 						s.stickerGO.transform.SetParent(themes[s.themeName].transform);
@@ -117,10 +93,10 @@ public class AddImageScript : MonoBehaviour {
 			if(newStickerThemeNames.Count > 0) {
 				if (newThemeScroller.transform.childCount > 0) {
 					
-					Debug.Log("Number of stickers downloaded = " + downloadedStickers.Count);
+					Debug.Log("Number of Sounds downloaded = " + downloadedStickers.Count);
 					
 					//New way
-					goArray = new GameObject[downloadedStickers.Count];
+					//goArray = new GameObject[downloadedStickers.Count];
 					
 					for(int i=0; i < downloadedStickers.Count; i++)
 					{
@@ -129,10 +105,10 @@ public class AddImageScript : MonoBehaviour {
 						//goArray.SetValue(newThemeIcon.transform.gameObject, i);
 						
 						newThemeIcon.transform.GetComponent<Image>().sprite = child.GetComponent<Image>().sprite;
-						goArray[i] = newThemeIcon.GetComponent<Image>().gameObject;
+						//goArray[i] = newThemeIcon.GetComponent<Image>().gameObject;
 					}
 					
-					numsShuffle = new int[downloadedStickers.Count];
+					/*numsShuffle = new int[downloadedStickers.Count];
 					Debug.Log("numsShuffle = " + numsShuffle.Length);
 					
 					// populate numsShuffle array
@@ -144,10 +120,11 @@ public class AddImageScript : MonoBehaviour {
 					
 					for(int i=0; i < numsShuffle.Length; i++){
 						//numsShuffle[i] = i;
-					}
+						Debug.Log("Shuffled numbers array = " + numsShuffle);
+					}*/
 					
 					
-					butPic1.GetComponent<Image>().sprite = goArray[numsShuffle[0]].GetComponent<Image>().sprite;
+					/*butPic1.GetComponent<Image>().sprite = goArray[numsShuffle[0]].GetComponent<Image>().sprite;
 					// set the name of the button Word1 = to the name of the image added to the button of picture 1. 
 					butWord1.GetComponent<Image>().name = goArray[numsShuffle[0]].GetComponent<Image>().name;
 					// set the Text of button Word1 = to the Name of the button.
@@ -168,21 +145,21 @@ public class AddImageScript : MonoBehaviour {
 					butWord4.GetComponent<Image>().name = goArray[numsShuffle[3]].GetComponent<Image>().name;
 					butWord4.transform.GetChild(0).GetComponent<Text>().text = butWord4.gameObject.name.ToString();
 					learnGS.setTheIrishWord4(butWord4.gameObject.name.ToString());
-
+					
 					butPic5.GetComponent<Image>().sprite = goArray[numsShuffle[4]].GetComponent<Image>().sprite;
 					butWord5.GetComponent<Image>().name = goArray[numsShuffle[4]].GetComponent<Image>().name;
 					butWord5.transform.GetChild(0).GetComponent<Text>().text = butWord5.gameObject.name.ToString();
 					learnGS.setTheIrishWord5(butWord5.gameObject.name.ToString());
-
+					
 					butPic6.GetComponent<Image>().sprite = goArray[numsShuffle[5]].GetComponent<Image>().sprite;
 					butWord6.GetComponent<Image>().name = goArray[numsShuffle[5]].GetComponent<Image>().name;
 					butWord6.transform.GetChild(0).GetComponent<Text>().text = butWord6.gameObject.name.ToString();
 					learnGS.setTheIrishWord6(butWord6.gameObject.name.ToString());
-
+					
 					butPic7.GetComponent<Image>().sprite = goArray[numsShuffle[6]].GetComponent<Image>().sprite;
 					butWord7.GetComponent<Image>().name = goArray[numsShuffle[6]].GetComponent<Image>().name;
 					butWord7.transform.GetChild(0).GetComponent<Text>().text = butWord7.gameObject.name.ToString();
-					learnGS.setTheIrishWord7(butWord7.gameObject.name.ToString());
+					learnGS.setTheIrishWord7(butWord7.gameObject.name.ToString());*/
 					
 					//old way Below
 					
@@ -213,7 +190,7 @@ public class AddImageScript : MonoBehaviour {
 			initialized = true;
 		}
 	}
-
+	
 	// shuffle array
 	void reshuffle(int[] nums)
 	{
